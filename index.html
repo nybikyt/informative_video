@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            display: none;
+        }
+        #startButton {
+            font-size: 18px;
+            padding: 15px 30px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s
+        }
+        #startButton:hover {
+            background: #0056b3;
+        }
+    </style>
+    <script>
+        function enterFullscreen() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                enterFullscreen();
+            } else {
+                exitFullscreen();
+            }
+        }
+        
+        function startVideo() {
+            let video = document.querySelector("video");
+            let button = document.getElementById("startButton");
+            if (button) button.style.display = "none";
+            video.style.display = "block";
+            video.play();
+            enterFullscreen();
+        }
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.opener || sessionStorage.getItem("autoPlay")) {
+                startVideo();
+            }
+        });
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "F11") {
+                event.preventDefault();
+                toggleFullscreen();
+            }
+        });
+
+        document.addEventListener("contextmenu", function(event) {
+            event.preventDefault();
+        });
+
+        window.onbeforeunload = function() {
+            return "Вы действительно хотите покинуть страницу?";
+        };
+
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.querySelector("video").play();
+            }
+        });
+
+        window.onblur = function() {
+            setTimeout(() => { document.querySelector("video").play(); }, 1000);
+        };
+    </script>
+</head>
+<body>
+    <button id="startButton" onclick="startVideo()">Начать просмотр</button>
+    <video>
+        <source src="videos/video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</body>
+</html>
