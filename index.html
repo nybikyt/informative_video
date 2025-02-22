@@ -34,13 +34,15 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: 0.3s
+            transition: 0.3s;
         }
         #startButton:hover {
             background: #0056b3;
         }
     </style>
     <script>
+        let audioContext, gainNode;
+
         function enterFullscreen() {
             let elem = document.documentElement;
             if (elem.requestFullscreen) {
@@ -79,6 +81,20 @@
             let button = document.getElementById("startButton");
             if (button) button.style.display = "none";
             video.style.display = "block";
+
+            // Создаём Web Audio API для усиления звука
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                let source = audioContext.createMediaElementSource(video);
+                gainNode = audioContext.createGain();
+                
+                gainNode.gain.value = 3; // Усиливаем в 3 раза (300%)
+
+                source.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+            }
+
+            video.volume = 1.0; // Устанавливаем стандартную громкость
             video.play();
             enterFullscreen();
         }
